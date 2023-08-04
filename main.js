@@ -16,7 +16,7 @@ function createWindow() {
     height: 950,
     backgroundColor: "white",
     webPreferences: {
-      devTools: false,
+      devTools: true,
       nodeIntegration: false,
       contextIsolation: true,
       nativeWindowOpen: true,
