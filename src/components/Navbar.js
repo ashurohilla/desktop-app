@@ -18,13 +18,13 @@ function Navbar() {
   }; // Empty dependency array to run the effect only once on component mount
 
   return (
-    <nav className="top-2 z-40 flex flex-row flex-wrap items-center justify-between navbarcolor">
-      <img src={logo} alt="Daina sentinel" className="w-[60px] h-[px] text-black rounded-[100px]" />
+    <nav className="top-2 text-xl flex flex-row flex-wrap items-center justify-between bg-black">
+      <img src={logo} alt="Daina sentinel" className="w-[60px]  text-black " />
       <ul className="list-none sm:flex justify-center items-center flex-1">
         <span> </span>
-        <li className="font-poppins font-normal cursor-pointer text-4xl flex  text-white float-right  hover:marker px-5 py-5 ">
+        <li className='flex px-4 py-2   rounded-full hover:bg-blue-700  text-white navtext font-sans text-xl border border-white transition-colors duration-200'>
           {user ? (
-            <button onClick={handleLogout}>logout</button>
+            <button  onClick={handleLogout}>Logout</button>
           ) : (
             <a href="">Login</a>
           )}
@@ -32,9 +32,9 @@ function Navbar() {
      
         <span> </span>
       </ul>
-      <button className='h-16 w-10 rounded-full buttoncolor'>
-    <li className=" list-none  font-poppins font-normal cursor-pointer text-black px-2 py-2 float-right mx-5 text-xl">
-          <Link to="/">Diana</Link>
+      <button className=' dianabtn'>
+    <li className=" dianabtn flex border border-white px-4 py-2   rounded-full hover:bg-blue-700 navtext text-white font-sans text-xl  transition-colors duration-200">
+          <Link to="www.dianasentinel.com">Diana</Link>
         </li>
       </button>
     </nav>

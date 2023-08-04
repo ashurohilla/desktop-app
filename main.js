@@ -16,7 +16,7 @@ function createWindow() {
     height: 950,
     backgroundColor: "white",
     webPreferences: {
-      devTools: false,
+      devTools: true,
       nodeIntegration: false,
       contextIsolation: true,
       nativeWindowOpen: true,
@@ -27,8 +27,8 @@ function createWindow() {
   });
 
   mainWindow.loadFile("./index.html");
-  globalShortcut.register('CommandOrControl+R', () => {});
-  globalShortcut.register('F5', () => {});
+  // globalShortcut.register('CommandOrControl+R', () => {});
+  // globalShortcut.register('F5', () => {});
   
   return mainWindow;
 }
