@@ -6,7 +6,7 @@ import Dropdown from './dropdown/index'
 
 
 function Navbar() {
-  const user = localStorage.getItem('user');
+  const username = localStorage.getItem('name');
   const { setUser, setId, setToken } = useAuth(); // Assuming you have a custom hook named useAuth
 
   const handleLogout = async () => {
@@ -18,26 +18,33 @@ function Navbar() {
   }; // Empty dependency array to run the effect only once on component mount
 
   return (
-    <nav className="top-2 z-40 flex flex-row flex-wrap items-center justify-between navbarcolor">
-      <img src={logo} alt="Daina sentinel" className="w-[60px] h-[px] text-black rounded-[100px]" />
-      <ul className="list-none sm:flex justify-center items-center flex-1">
-        <span> </span>
-        <li className="font-poppins font-normal cursor-pointer text-4xl flex  text-white float-right  hover:marker px-5 py-5 ">
-          {user ? (
-            <button onClick={handleLogout}>logout</button>
-          ) : (
-            <a href="">Login</a>
-          )}
-        </li>
-     
-        <span> </span>
-      </ul>
-      <button className='h-16 w-10 rounded-full buttoncolor'>
-    <li className=" list-none  font-poppins font-normal cursor-pointer text-black px-2 py-2 float-right mx-5 text-xl">
-          <Link to="/">Diana</Link>
-        </li>
-      </button>
-    </nav>
+    <nav className=" navigationbar top-2 text-xl flex w-full items-center   justify-between  z-20">
+    <div className='flex item-center'>
+
+   
+    <img src={logo} alt="Daina sentinel" className=" flex w-[60px] h-auto py-2 pl-2 " />
+    <p className=" flex text-newbuttoncolor ">iana</p>
+    </div>
+
+    <div className="flex postiondiv  float-right flex-1 mr-2">
+      <li className=" flex flex-col">
+      <p className='mr-2 text-white'>{username}</p>
+        {username ? (
+          <p
+            className= "text-red-600 logoutbutton font-sans text-md transition-colors duration-200"
+            onClick={handleLogout}
+          >
+            Logout
+          </p>
+        ) : (
+          <a href=""></a>
+        )}
+      </li>
+      </div>
+      
+      
+   
+  </nav>
   );
 }
  

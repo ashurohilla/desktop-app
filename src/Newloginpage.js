@@ -2,33 +2,31 @@ import React, { useState } from "react";
 import { useAuth } from "./context/AuthContext";
 import { Link } from "react-router-dom";
 import AuthApi from "./auth/auth";
-import Navbar from './components/Navbar'
+import Navbar from "./components/Navbar";
 import InputField from "./components/fields/InputField";
-import logo from "./assests/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import Particle from "./components/particle";
 function Login_page() {
   const navigate = useNavigate();
-  let {user}= useAuth;
+  let { user } = useAuth;
   const { setUser } = useAuth();
-  const {id} =useAuth();
-  const {setId} = useAuth();
-  const {token}= useAuth();
-  const {setToken}= useAuth();
+  const { id } = useAuth();
+  const { setId } = useAuth();
+  const { token } = useAuth();
+  const { setToken } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(undefined);
   const [buttonText, setButtonText] = useState("Sign in");
   // const [registrationType, setRegistrationType] = useState("employee");
 
-
   const login = async (event) => {
     if (event) {
       event.preventDefault();
     }
     if (user && user.token) {
-
-      return setError("navigating login page")
+      return setError("navigating login page");
     }
     if (email === "") {
       return setError("You must enter your email.");
@@ -41,14 +39,12 @@ function Login_page() {
       let response = await AuthApi.Login({
         email,
         password,
-      }
-      );
+      });
       if (response.data && response.data.success === true) {
         return setError(response.data.msg);
       }
       console.log(response);
       return setProfile(response);
-      
     } catch (err) {
       console.log(err);
       setButtonText("Sign in");
@@ -58,251 +54,131 @@ function Login_page() {
       return setError("There has been an error.");
     }
   };
+  const handleLinkClick = () => {
+    window.open('https://www.dianasentinel.com/', '_blank');
+  };
+
 
   const setProfile = async (response) => {
-    console.log(response)
+    console.log(response);
     let user = { ...response.data.user };
     var token = response.data.access;
-    var decode = jwtDecode(token)
-    let  id =  decode.user_id;
+    var decode = jwtDecode(token);
+    let id = decode.user_id;
+    let name = decode.name;
     user = JSON.stringify(user);
     localStorage.setItem("user", user);
-    localStorage.setItem("id", id)
-    localStorage.setItem("token", token)
+    localStorage.setItem("id", id);
+    localStorage.setItem("token", token);
+    localStorage.setItem("name", name);
     setUser(user);
     setId(id);
     setToken(token);
     window.location.reload();
   };
   return (
-    <div>
-    <Navbar />
-    <div className=" px-36 py-8  h-fit loginbackground ">
-      <div className="flex float-left">
-        <Link to="/dashboard" className="mt-0 w-max lg:pt-10">
-          <div className="mx-auto flex h-fit w-fit items-center hover:cursor-pointer">
-            <svg
-              width="8"
-              height="12"
-              viewBox="0 0 8 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.70994 2.11997L2.82994 5.99997L6.70994 9.87997C7.09994 10.27 7.09994 10.9 6.70994 11.29C6.31994 11.68 5.68994 11.68 5.29994 11.29L0.709941 6.69997C0.319941 6.30997 0.319941 5.67997 0.709941 5.28997L5.29994 0.699971C5.68994 0.309971 6.31994 0.309971 6.70994 0.699971C7.08994 1.08997 7.09994 1.72997 6.70994 2.11997V2.11997Z"
-                fill="#A3AED0"
+    <div className=" loginnew ">
+    <Particle/>
+      <Navbar />
+      <div className=" heading  text-white text-3xl mx-auto justify-center  flex h-fit w-fit items-center hover:cursor-pointer hover:text-blue-800">
+              Diana Employe Monitoring software
+      </div>
+
+      <div className="flex justify-center mt-8">
+      <button className=" signinbutton mt-2 flex  border rounded-2xl py-2 ">
+              <h4 className=" flex text-2xl  justify-center font-bold px-2 text-white">
+                Sign in
+              </h4>
+            </button>
+
+      </div>
+      <div className=" mt-8  flex justify-center items-center md:pl-4 lg:pl-0 ">
+            
+            {/* Email */}
+            <form method="submit">
+              <InputField
+                style={{ color: "white"}}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  setError(undefined);
+                }}
+                autoComplete="mail"
+                name="email"
+                variant="auth"
+                extra="mb-3 imputWidth "
+                label="Email*"
+                placeholder="Enter your Email"
+                id="Email"
+                type="email"
+                value={email}
+                className="input"
               />
-            </svg>
-            <p className="ml-3 text-sm text-gray-600">Back to Dashboard</p>
-          </div>
-        </Link>
-      </div>
-      <div className="mt-18 mb-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
-        {/* Sign in section */}
-        <div className=" w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]">
-         <button className="buttoncolor rounded-2xl mb-2 ">
-         <h4 className=" text-3xl flex justify-center items-center font-bold  px-3 py-2 text-white">
-            Sign In
-          </h4>
-         </button>
-          <p className="mb-9 ml-1 text-base text-white">
-            Enter your email and password to sign in!
-          </p>
-          <div className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800">
-            <div className="rounded-full text-xl">
-            </div>
-            <h5 className="text-sm font-medium text-navy-700 text-white">
-              Sign In with Google
-            </h5>
-          </div>
-          <div className="mb-6 flex items-center  gap-3">
-            <div className="h-px w-full bg-gray-200 dark:bg-navy-700" />
-            <p className="text-base text-gray-600 dark:text-white"> or </p>
-            <div className="h-px w-full bg-gray-200 dark:bg-navy-700" />
-          </div>
-          {/* Email */}
-         <form method="submit">
-         <InputField
-           onChange={(event) => {
-            setEmail(event.target.value);
-            setError(undefined);
-          }}
-            autoComplete="mail"
-            name="email"
-            variant="auth"
-            extra="mb-3"
-            label="Email*"
-            placeholder="mail@simmmple.com"
-            id="Email"
-            type="email"
-            value={email}
-          
-          />
+
+              <InputField
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  setError(undefined);
+                }}
+                variant="auth"
+                name="password"
+                extra="mb-3 imputWidth "
+                label="Password*"
+                placeholder="Password"
+                id="password"
+                type="password"
+                value={password}
+                autoComplete="current-password"
+              />
+
+              {/* Checkbox */}
+              <div className=" flex items-center justify-between py-2 px-2">
+                <div className="flex items-center">
+                <input type="checkbox" />
+                  <p className="ml-2 text-sm font-medium text-white">
+                    Keep me logged In
+                  </p>
+                </div>
+                <a
+                  className="text-sm font-medium text-buttoncolor hover:text-blue-600 dark:text-white"
+                  href=" "
+                >
+                  Forgot Password?
+                </a>
+                
+              </div>
+
+              <div className="widthbutton">
+            <button
+                type="Submit"
+                onClick={login}
+                className=" mt-4  buttonsize flex items-center    justify-center rounded-xl  py-[12px]  font-medium text-white buttoncolor"
+              >
+                {buttonText}
+              </button>
 
 
-          <InputField
-          onChange={(event) => {
-            setPassword(event.target.value);
-            setError(undefined);
-          }}
-            variant="auth"
-            name = "password"
-            extra="mb-3"
-            label="Password*"
-            placeholder="Min. 8 characters"
-            id="password"
-            type="password"
-            value={password}
-            autoComplete="current-password"
-            
-          />
-         
-          {/* Checkbox */}
-          <div className="mb-4 flex items-center justify-between px-2">
-            <div className="flex items-center">
-            
-              <p className="ml-2 text-sm font-medium text-navy-700 dark:text-white">
-                Keep me logged In
-              </p>
-            </div>
-            <a
-              className="text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white "
-              href=" "
-            >
-              Forgot Password?
-            </a>
-          </div>
-          <button
-            type="Submit"
-            onClick={login}
-            className="linear mt-2 w-full rounded-xl bg-brand-500 py-[12px] text-base font-medium text-black transition duration-200 hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-400 buttoncolor dark:hover:bg-brand-300 dark:active:bg-brand-200"
-          >
-            {buttonText}
-          </button>
-          </form>
-         
-          <h1 className="text-black">{error}</h1>
-          
-          <div className="mt-4">
-            <span className=" text-sm font-medium text-navy-700 dark:text-gray-600">
-              Not registered yet?
-            </span>
-            
               
-              <Link className= " flex float-right ml-1 text-sm font-medium text-brand-500 hover:text-brand-600 dark:text-white" to= "/register">Create an account</Link>
               
-            
-          </div>
-        </div>
-
-        <div className="relative float-right h-full min-h-screen  ">
+            </div>
+            <h1 className="text-red-500 flex justify-left float-left mt-4  ">{error}</h1>
+            </form>
+           
           
-        </div>
-        <div className="mt-0 absolute right-0  h-full min-h-screen block lg:w-[49vw] 2xl:w-[44vw]">
-          <div
-            className="absolute flex h-full w-full items-end justify-center bg-cover bg-center lg:rounded-bl-[120px] xl:rounded-bl-[200px] mx-5 backgroundimage"
-            style={{ backgroundImage: `url(${logo})` }}
-          />
-        </div>
-      </div>
+           
+            </div>
 
-      </div>
+            <footer>
+              <h1 className="float-right text-white pt-10 mx-2 linked">
+              <a   onClick={handleLinkClick} href='#'>  
+              www.dianasentinel.com
+
+              </a>
+
+              </h1>
+            </footer>
+           
     </div>
   );
 }
 
 export default Login_page;
-
-
-
-{/* <div className=" grid grid-cols-2 justify-center  bg-primary gap-4  h-[500px] shadow-2xl rounded-2xl ">
-        <div className=" mt-8 justify-center text-white grid grid-cols-1 grid-flow-row ">
-          <h1 className="text-3xl flex  justify-center pt-8 ">workwarden</h1>
-
-          <div className=" h-[300px] grid grid-flow-row grid-cols-1 gap-1 bg-gray-600 shadow-md rounded py-8 px-8 mx-3 my-8">
-            <div className=" flex  justify-center mt-8 mb-8  ">
-              <button
-                onClick={() => setRegistrationType("employee")}
-                className=" bg-gray-500 hover:bg-gray-700 text-white font-bold w-[200px] h-16  rounded"
-              >
-                Login as Company
-              </button>
-            </div>
-            <div className="flex justify-center">
-              <button
-                onClick={() => setRegistrationType("companyOwner")}
-                className=" bg-gray-500 hover:bg-gray-700 text-white font-bold rounded w-[200px] h-16"
-              >
-                Login as Employe
-              </button>
-            </div>
-          </div>
-        </div> */}
-      {/* login form page  */}
-
-      {/* {registrationType === "employee" && (
-          <div className=" grid grid-cols-1 grid-flow-row justify-center text-white pt-8 py-8 ">
-            <h1 className="text-3xl flex justify-center pt-8">Company login</h1>
-            <div className="px-8 ">
-              <form >
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                > Enter Your Email</label>
-                <input
-                   onChange={(event) => {
-                  setEmail(event.target.value);
-                  setError(undefined);
-                   }}
-                  type="text"
-                  value={email}
-                  name="Email"
-                  placeholder="Enter username"
-                  className=" text-black shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline"
-                />
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                ></label>
-                <input onChange={(event) => {
-                 setPassword(event.target.value);
-                 setError(undefined);
-              }}
-                  name = "password"
-                  type="password"
-                  value={password}
-                  placeholder="enter the password"
-                  className="text-black shadow appearance-none border border-red-500 rounded w-full py-2 px-3  mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                />
-                <p className="text-white text-xs italic py-2">
-                  Please choose a password.
-                </p>
-                <button type="submit" onClick={login} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                 {buttonText}
-                </button>
-                <h1>{error}</h1>
-
-                
-                <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 float-right mr-8">
-                  Forgot Password?
-                </a>
-                <p className=" py-5 px-5 flex justify-center items-center">
-                  {" "}
-                  Don&apos;t have an account?{" "}
-                  <button className="rounded px-3 py-2 bg-white mx-5"> <Link to = "/register"> register</Link></button>
-                  
-                </p>
-              </form>
-              <p className="text-center text-gray-500 text-xs"></p>
-            </div>
-          </div>
-        )} */}
-      {/* {registrationType === "companyOwner" && (
-          <div className=" grid grid-cols-1 grid-flow-row justify-center text-white pt-8 ">
-            <h1 className="text-3xl flex justify-center pt-8 ">
-              Employe login
-            </h1>
-            <div className="px-8 ">
-              <form>
-              </form>
-            </div>
-          </div>
-        )} */}
