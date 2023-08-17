@@ -18,6 +18,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
       callback(newdata);
     });
   },
+  getelapsedtime: (callback) => {
+    ipcRenderer.on('elapsedtiming', (event, elapsedTime , ) => {
+      callback(elapsedTime);
+    });
+  },
+  getideltime: (callback) => {
+    ipcRenderer.on('ideltiming', (event, ideltime , ) => {
+      callback(ideltime);
+    });
+  },
   sendDataforstop: (data) => {
     ipcRenderer.send('stop-tasking', data);
   },

@@ -22,6 +22,14 @@ static Attendance = (data) => {
     },
   });
 }
+static ideltime = (data) => {
+  const token = localStorage.getItem("token");
+  return axios.post(`${base}/idealtime`, data,{
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 static loggingout = (data) => {
   const token = localStorage.getItem("token");
   return axios.post(`${base}/loggingout`, data,{

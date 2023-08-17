@@ -5,8 +5,8 @@ import AuthApi from "./auth/auth";
 import Navbar from "./components/Navbar";
 import InputField from "./components/fields/InputField";
 import { useNavigate } from "react-router-dom";
-import jwtDecode from "jwt-decode";
 import Particle from "./components/particle";
+import jwtDecode from "jwt-decode";
 function Login_page() {
   const navigate = useNavigate();
   let { user } = useAuth;
@@ -81,7 +81,7 @@ function Login_page() {
     <Particle/>
       <Navbar />
       <div className=" heading  text-white text-3xl mx-auto justify-center  flex h-fit w-fit items-center hover:cursor-pointer hover:text-blue-800">
-              Diana Employe Monitoring software
+              Diana Employee Monitoring software
       </div>
 
       <div className="flex justify-center mt-8">

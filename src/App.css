@@ -1644,7 +1644,7 @@ video {
       #989898;
 }
 .maindiv{
- margin-top: 160px;
+ margin-top: 80px;
 }
 .images {
   justify-content: center;
@@ -1676,7 +1676,7 @@ video {
 }
 
 .textcolor {
-  color: #111c44;
+  color: #0f0f11;
 }
 
 .buttoncolor {
@@ -1707,10 +1707,9 @@ video {
   margin-top: 10px;
 }
 .inputform {
-  width: 250px;
-  height: 150px;
-  text-justify: auto;
-  font-size: 17px;
+  width: 300px;
+  height: 100px;
+  font-size: medium;
   font-family: sans-serif;
 }
 
@@ -1742,7 +1741,7 @@ video {
   justify-content: center;
   align-items: center;
   left: 0;
-  height: 120px;
+  height: 60px;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.1); /* Transparent white */
   backdrop-filter: blur(10px); /* Apply a blur effect */ 
@@ -1852,6 +1851,15 @@ padding-top: 10px;
   left: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.1); /* Transparent white */
-  backdrop-filter: blur(10px); /* Apply a blur effect */
+  backdrop-filter: blur(5px); /* Apply a blur effect */
   z-index: 1000; /* Adjust the z-index to place the navbar above other content */
+}
+.backgoundcolor{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(118, 118, 118, 0.8);
+  z-index: 10;
 }

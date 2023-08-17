@@ -4,14 +4,15 @@ import Navbar from "../Navbar";
 import logo from "../../assests/images/logo.png";
 import Help from "../../assests/images/help.png";
 import Setting from "../../assests/images/setting.png";
-
+import {BallTriangle} from 'react-loader-spinner'; // Import the Loader component
 import logging from "../../assests/images/logingin.png";
 import logout from "../../assests/images/logout.png";
 import working from "../../assests/images/working.png";
 import breakout from "../../assests/images/breakout.png";
 import AuthApi from "../../auth/auth";
 import { API_SERVER } from "../../config/constant";
-import animation from "../../assests/images/bganimation.gif"
+import animation from "../../assests/images/bganimation.gif";
+import workanimation from "../../assests/images/workinganimation.gif";
 function convertDataUrlToPng(dataUrl) {
   // Extract the base64 encoded image data from the Data URL
   const encodedData = dataUrl.split(",")[1];
@@ -42,82 +43,63 @@ function convertDataUrlToPng(dataUrl) {
   return file;
 }
 
+
+
+
+
+
+
 const DashboardPage = () => {
   const [isSendingScreenshots, setIsSendingScreenshots] = useState(false);
   const [image, setImage] = useState(logging);
   const [text, settext] = useState("START LOGIN");
   const [textwork, settextwork] = useState("ON WORK");
-  const [showGifBackground, setShowGifBackground] = useState(false);
+  const [idealtime, Setideltime] = useState(0);
 
 
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [work, setwork] = useState(working);
-  const [ color, setcolor] = useState("mainback");
-  const [login_time, setlogin_time] = useState(null);
-  const [logout_time, setlogout_time] = useState(null);
+  const [backgroundgif, setbackgroundgif] = useState(workanimation);
+
+
   const [work_status, setstatus] = useState("working");
   const [error, setError] = useState(undefined);
-  const [user, setuser] = localStorage.getItem("id");
-  const [date, setDate] = useState(null);
+  const [user_id, setuser] = localStorage.getItem("id");
   const [endreport, setFormData] = useState("");
   const [isFormVisible, setFormVisible] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [loginimage, setloginimage] = useState(true);
 
-  const handleLinkClick = () => {
-    window.open('https://www.dianasentinel.com/', '_blank');
-  };
-  const toggleBackground = () => {
-    setShowGifBackground(prevState => !prevState);
-  };
-
-  useEffect(() => {
-    let intervalId = null;
-
-    if (isRecording) {
-      intervalId = setInterval(() => {
-        setElapsedTime((prevElapsedTime) => prevElapsedTime + 1);
-      }, 1000);
-    } else {
-      clearInterval(intervalId);
-    }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [isRecording]);
+  const [isLoading, setLoading] = useState(false); // Set initial loading state to false
 
   const formatTime = (seconds) => {
     const pad = (value) => (value < 10 ? `0${value}` : value);
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-
+  
     return `${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
   };
 
 
-
-
-
-
-
+  const handleLinkClick = () => {
+    window.open('https://www.dianasentinel.com/', '_blank');
+  };
   const handlework = () => {
     if (work === working) {
       setIsSendingScreenshots(false);
       setIsRecording(false);
       setwork(breakout);
       settextwork(" on break ");
-      setcolor("logetout")
-      toggleBackground()
+      setbackgroundgif(animation)
       window.electronAPI.sendDataforstop("stop-tasking");
     } else {
       setwork(working);
       setIsSendingScreenshots(true);
       setIsRecording(true);
       settextwork(" on working ");
-      setcolor('mainback');
-      toggleBackground()
+      setbackgroundgif(workanimation)
       window.electronAPI.sendDatafortasking("capture-details");
     }
   };
@@ -129,8 +111,12 @@ const DashboardPage = () => {
     if (file) {
       const id = localStorage.getItem("id");
       const formData = new FormData();
+      const date = new Date();
+
+      const time = date.toString();
       formData.append("image", file);
       formData.append("organization_id", id);
+      formData.append("time",time);
 
       axios
         .post(`${API_SERVER}users/screenshots`, formData, {
@@ -168,6 +154,21 @@ const DashboardPage = () => {
     });
   }, []);
 
+  useEffect(() => {
+    // Receive data from the main process
+    window.electronAPI.getelapsedtime((elapsedTime) => {
+      // Handle the received data
+      setElapsedTime(elapsedTime);
+    });
+  }, []);
+  useEffect(() => {
+    // Receive data from the main process
+    window.electronAPI.getideltime((idelTime) => {
+      console.log("apicalled", idelTime)
+      ideltime(formatTime(idelTime));
+    });
+  }, []);
+
   const screendetails = async (data) => {
     const screen_count = data.screenswitchcount;
     const screen_name = data.screenname;
@@ -195,7 +196,6 @@ const DashboardPage = () => {
 
   const handleCaptureScreenshot = () => {
     window.electronAPI.sendDataToMain("capture-screenshot");
-    console.log("sending screenshot");
   };
 
   const stopSendingScreenshots = () => {
@@ -219,17 +219,50 @@ const DashboardPage = () => {
   };
 
 
+  const ideltime = async ( idealtime) => {
+    console.log("sending idel time");
+    const date = new Date();
+    const localtime =  date.toString();
+    const organization_id = localStorage.getItem("id");
+    try {
+      let response = await AuthApi.ideltime({
+        localtime,
+        organization_id,
+        idealtime,
+      });
+      if (response.data && response.status === 201) {
+       
+        setError("idel time updated");
+      }
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+      if (err.response) {
+        setError("Something went wrong");
+      } else {
+        setError("Something went Wrong");
+      }
+    }
+  };
+
+
 
 
   const loggingin = async (event) => {
     if (event) {
       event.preventDefault();
     }
-    console.log("sending login deatils");
+    console.log("sending login details");
+    setLoading(true); // Set loading state to true when login starts
+    const date = new Date();
+
+    const login_time = date.toString();
+
     try {
       let response = await AuthApi.Attendance({
+        login_time,
         work_status,
-        user,
+        user_id,
       });
       if (response.data && response.status === 201) {
         if (image === logging) {
@@ -237,20 +270,24 @@ const DashboardPage = () => {
           setImage(logout);
           settext("STOP LOGIN");
           setShowImage(true);
+          setloginimage(false);
         } else {
           settext("START LOGIN");
           stopSendingScreenshots();
         }
-
-        return setError("logged in successfully");
+  
+        setError("logged in successfully");
       }
       console.log(response);
     } catch (err) {
       console.log(err);
       if (err.response) {
-        return setError("Something went wrong");
+        setError("Something went wrong");
+      } else {
+        setError("Something went Wrong");
       }
-      return setError("Something went Wrong");
+    } finally {
+      setLoading(false); // Set loading state back to false after request is complete
     }
   };
 
@@ -259,16 +296,25 @@ const DashboardPage = () => {
       event.preventDefault();
     }
     console.log("sending logout deatils");
+    let total_time = formatTime(elapsedTime);
+    const date = new Date();
+
+    const logout_time = date.toString();
     try {
       let response = await AuthApi.loggingout({
+        logout_time,
         endreport,
-        user,
+        user_id,
+        total_time,
       });
       console.log(endreport);
+      console.log(response);
       if (response.data && response.status === 201) {
         setFormVisible(false);
         setImage(logging);
+        setbackgroundgif(workanimation)
         setShowImage(false);
+        stopSendingScreenshots();
         return setError("succesfully logout");
       }
       console.log(response);
@@ -306,31 +352,74 @@ const DashboardPage = () => {
     setFormVisible(!isFormVisible);
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
+  const handleFormSubmit = (evnet) => {
+    evnet.preventDefault();
     loggingout();
+    settext("START LOGIN");
   };
 
   return (
-    <div className= {` w-full h-full totalwidht ${color}`}>
-    {showGifBackground && (
+    <div className= {` w-full h-full totalwidht`}>
         <img
-          src={animation}
+          src={backgroundgif}
           alt="Background"
           className="backimageset w-full h-full fixed z-2  "
         />
-      )}
+    
         <Navbar />
         <div className=" maindiv flex  justify-center item-center px-5 images z-40  boxShadow-3xl  ">
           <button className="" onClick={handleClick}>
             <img
-              className=" waves flex hover rounded-full w-12 h-12 loginimage  items-center "
+             className={`waves flex hover rounded-full w-10 h-10 loginimage items-center ${
+              loginimage ? "visible" : "hidden"
+              }`}
               src={image}
               alt=""
             />
 
-            <p className="text-white text-xl">{text}</p>
+            
+<p
+              className={`textcolor text-xl ${
+                loginimage ? "visible" : "hidden"
+              }`}
+            >
+              {text}
+            </p>
           </button>
+
+          <button className="" onClick={toggleFormVisibility}>
+            <img
+              className={`waves flex hover rounded-full w-10 h-10 loginimage items-center ${
+                !loginimage ? "visible" : "hidden"
+              }`}
+              src={image}
+              alt=""
+            />
+
+            <p
+              className={`textcolor text-xl ${
+                !loginimage ? "visible" : "hidden"
+              }`}
+            >
+              {text}
+            </p>
+          </button>
+
+
+          {isLoading ? (
+          <div className="flex  backgoundcolor ">
+  <BallTriangle
+  height={120}
+  width={120}
+  radius={5}
+  color="#4fa94d"
+  ariaLabel="ball-triangle-loading"
+  wrapperClass={{}}
+  wrapperStyle=""
+  visible={true}
+/>  
+</div>
+) : null}
           <button className="" onClick={handlework}>
             <img
               className={`waves flex hover rounded-full w-10 h-10 loginimage items-center ${
@@ -358,13 +447,13 @@ const DashboardPage = () => {
         <div>
           {isFormVisible && (
             <form onSubmit={handleFormSubmit} className="flex flex-col justify-center items-center">
-              <label className="endreportt mt-4  text-xl font-sans font-bold flex flex-col justify-center items-center">
+              <label className="endreportt mt-4 text-color  text-xl font-sans font-bold flex flex-col justify-center items-center">
             
                 End Report
-                <textarea
+                <input
                 placeholder="your day end report"
                   className="inputform rounded"
-                  type="textarea"
+                  type="text"
                   value={endreport}
                   maxLength={100}
                   onChange={(event) => {
